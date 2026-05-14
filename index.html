@@ -29,14 +29,9 @@
       </header>
 
       <main>
-        <section class="intro-band compact-intro" aria-labelledby="intro-title">
+        <section class="intro-band compact-intro" aria-label="TsumPace Web の説明">
           <div class="intro-copy">
-            <p class="eyebrow">端末内保存のみ / ログインなし</p>
-            <h1 id="intro-title">TsumPace Web</h1>
-            <p>
-              コイン稼ぎの記録をブラウザ内に保存し、グラフやランキングで確認できます。
-              Android版をインストールする前のお試し版です。
-            </p>
+            <p class="intro-note">端末内保存のみ / ログインなし。Android版のお試し版です。</p>
           </div>
           <div class="pace-strip" aria-label="サンプルのペース表示">
             <span class="pace-dot done"></span>
@@ -74,16 +69,22 @@
                 <div class="time-inputs">
                   <label>
                     <span>分</span>
-                    <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="5" />
+                    <div class="unit-input">
+                      <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="5" />
+                      <b>分</b>
+                    </div>
                   </label>
                   <label>
                     <span>秒</span>
-                    <input id="playSeconds" type="number" min="0" max="59" step="1" inputmode="numeric" placeholder="15" />
+                    <div class="unit-input">
+                      <input id="playSeconds" type="number" min="0" max="59" step="1" inputmode="numeric" placeholder="15" />
+                      <b>秒</b>
+                    </div>
                   </label>
                 </div>
               </div>
             </div>
-            <p class="field-help" id="playTimeHelp">例: 5分15秒なら、分に「5」、秒に「15」。未入力でも保存できます。</p>
+            <p class="field-help" id="playTimeHelp">5分15秒なら、左の分欄に「5」、右の秒欄に「15」を入力します。未入力でも保存できます。</p>
 
             <fieldset class="item-picker">
               <legend>使用アイテム</legend>
