@@ -631,7 +631,7 @@ canvas {
 
 table {
   width: 100%;
-  min-width: 760px;
+  min-width: 960px;
   border-collapse: collapse;
   background: var(--sheet-raised);
 }

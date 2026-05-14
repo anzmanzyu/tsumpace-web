@@ -76,13 +76,15 @@ exportButton.addEventListener("click", () => {
   }
 
   const rows = [
-    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "playTime", "items", "memo"],
+    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "playTime", "coinsPerMinute", "coinsPerHour", "items", "memo"],
     ...records.map((record) => [
       record.playedAt,
       record.character,
       record.baseCoins,
       Math.round(record.baseCoins * 1.3),
       formatPlayTime(record),
+      efficiency(record).perMinute || "",
+      efficiency(record).perHour || "",
       record.items.join(" / "),
       record.memo || ""
     ])
@@ -149,17 +151,24 @@ function renderSummary() {
   const totalCoins = records.reduce((total, record) => total + record.baseCoins, 0);
   const average = records.length ? Math.round(totalCoins / records.length) : 0;
   const best = records.length ? Math.max(...records.map((record) => record.baseCoins)) : 0;
+  const timedRecords = records.filter((record) => Number(record.playSeconds || 0) > 0);
+  const totalTimedCoins = timedRecords.reduce((total, record) => total + record.baseCoins, 0);
+  const totalSeconds = timedRecords.reduce((total, record) => total + Number(record.playSeconds || 0), 0);
+  const averagePerMinute = totalSeconds ? Math.round(totalTimedCoins / (totalSeconds / 60)) : null;
+  const averagePerHour = averagePerMinute ? averagePerMinute * 60 : null;
 
   document.querySelector("#todayCoins").textContent = formatNumber(todayCoins);
   document.querySelector("#totalCount").textContent = formatNumber(records.length);
   document.querySelector("#averageCoins").textContent = formatNumber(average);
   document.querySelector("#bestCoins").textContent = formatNumber(best);
+  document.querySelector("#averagePerMinute").textContent = averagePerMinute ? formatNumber(averagePerMinute) : "-";
+  document.querySelector("#averagePerHour").textContent = averagePerHour ? formatNumber(averagePerHour) : "-";
   document.querySelector("#todayMeter").style.width = `${Math.min(100, (todayCoins / 50000) * 100)}%`;
 }
 
 function renderHistory() {
   if (records.length === 0) {
-    historyBody.innerHTML = `<tr class="empty-row"><td colspan="6">まだ記録がありません。まずはサンプル追加か、今日の記録を入れてみてください。</td></tr>`;
+    historyBody.innerHTML = `<tr class="empty-row"><td colspan="8">まだ記録がありません。まずはサンプル追加か、今日の記録を入れてみてください。</td></tr>`;
     return;
   }
 
@@ -169,6 +178,8 @@ function renderHistory() {
       <td>${escapeHtml(record.character)}</td>
       <td class="numeric">${formatNumber(record.baseCoins)}</td>
       <td class="numeric">${formatNumber(Math.round(record.baseCoins * 1.3))}</td>
+      <td class="numeric">${formatEfficiency(efficiency(record).perMinute)}</td>
+      <td class="numeric">${formatEfficiency(efficiency(record).perHour)}</td>
       <td>${record.items.length ? record.items.map(escapeHtml).join(" / ") : "なし"}</td>
       <td>${record.memo ? escapeHtml(record.memo) : ""}</td>
     </tr>
@@ -377,6 +388,20 @@ function formatPlayTime(record) {
   if (minutes && seconds) return `${minutes}分${seconds}秒`;
   if (minutes) return `${minutes}分`;
   return `${seconds}秒`;
+}
+
+function efficiency(record) {
+  const totalSeconds = Number(record.playSeconds || 0);
+  if (!totalSeconds) return { perMinute: null, perHour: null };
+  const perMinute = Math.round(record.baseCoins / (totalSeconds / 60));
+  return {
+    perMinute,
+    perHour: perMinute * 60
+  };
+}
+
+function formatEfficiency(value) {
+  return value ? formatNumber(value) : "-";
 }
 
 function formatCompact(value) {
