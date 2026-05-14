@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="TsumPace Web は、コイン稼ぎの記録をブラウザ内に保存して、グラフやランキングで振り返れるお試し版です。"
+    />
+    <title>TsumPace Web</title>
+    <link rel="icon" href="./assets/tsumpace-icon.png" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="./" aria-label="TsumPace Web ホーム">
+          <img src="./assets/tsumpace-icon.png" alt="" class="brand-mark" />
+          <span>
+            <strong>TsumPace Web</strong>
+            <small>ブラウザで試せる記録版</small>
+          </span>
+        </a>
+        <nav class="topnav" aria-label="主要メニュー">
+          <a href="#record">記録</a>
+          <a href="#stats">集計</a>
+          <a href="#history">履歴</a>
+        </nav>
+      </header>
+
+      <main>
+        <section class="intro-band" aria-labelledby="intro-title">
+          <div class="intro-copy">
+            <p class="eyebrow">端末内保存のみ / ログインなし</p>
+            <h1 id="intro-title">コイン稼ぎのペースを、あとで見返せる形に。</h1>
+            <p>
+              TsumPace Web は、Android版の雰囲気をインストール前に試せる軽量版です。
+              入力した記録はこのブラウザ内だけに保存されます。
+            </p>
+          </div>
+          <div class="pace-strip" aria-label="サンプルのペース表示">
+            <span class="pace-dot done"></span>
+            <span class="pace-line strong"></span>
+            <span class="pace-dot done"></span>
+            <span class="pace-line"></span>
+            <span class="pace-dot current"></span>
+            <span class="pace-line soft"></span>
+            <span class="pace-dot"></span>
+          </div>
+        </section>
+
+        <section class="workbench" id="record" aria-labelledby="record-title">
+          <form class="entry-panel" id="recordForm">
+            <div class="section-heading">
+              <p class="eyebrow">New record</p>
+              <h2 id="record-title">プレイ記録</h2>
+            </div>
+
+            <div class="field-grid">
+              <label>
+                <span>日付</span>
+                <input id="playedAt" type="date" required />
+              </label>
+              <label>
+                <span>キャラ</span>
+                <input id="character" type="text" list="characterList" placeholder="例: ガストン" required />
+              </label>
+              <label>
+                <span>素コイン</span>
+                <input id="baseCoins" type="number" min="0" step="1" inputmode="numeric" placeholder="例: 6500" required />
+              </label>
+              <label>
+                <span>プレイ時間</span>
+                <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="分" />
+              </label>
+            </div>
+
+            <fieldset class="item-picker">
+              <legend>使用アイテム</legend>
+              <label><input type="checkbox" name="item" value="+Coin" checked /> <span>+Coin</span></label>
+              <label><input type="checkbox" name="item" value="5→4" /> <span>5→4</span></label>
+              <label><input type="checkbox" name="item" value="+Time" /> <span>+Time</span></label>
+              <label><input type="checkbox" name="item" value="+Bomb" /> <span>+Bomb</span></label>
+              <label><input type="checkbox" name="item" value="+Score" /> <span>+Score</span></label>
+            </fieldset>
+
+            <label class="memo-field">
+              <span>メモ</span>
+              <textarea id="memo" rows="3" placeholder="任意メモ"></textarea>
+            </label>
+
+            <div class="form-actions">
+              <button class="primary-action" type="submit">記録する</button>
+              <button class="ghost-action" type="button" id="sampleButton">サンプル追加</button>
+            </div>
+            <p class="form-note" id="formNote" role="status" aria-live="polite"></p>
+          </form>
+
+          <aside class="today-panel" aria-labelledby="today-title">
+            <div class="section-heading compact">
+              <p class="eyebrow">Today</p>
+              <h2 id="today-title">今日の手応え</h2>
+            </div>
+            <div class="meter">
+              <div class="meter-value">
+                <span id="todayCoins">0</span>
+                <small>coins</small>
+              </div>
+              <div class="meter-track" aria-hidden="true">
+                <span id="todayMeter"></span>
+              </div>
+            </div>
+            <dl class="summary-list">
+              <div>
+                <dt>記録数</dt>
+                <dd id="totalCount">0</dd>
+              </div>
+              <div>
+                <dt>平均</dt>
+                <dd id="averageCoins">0</dd>
+              </div>
+              <div>
+                <dt>最高</dt>
+                <dd id="bestCoins">0</dd>
+              </div>
+            </dl>
+          </aside>
+        </section>
+
+        <section class="stats-band" id="stats" aria-labelledby="stats-title">
+          <div class="stats-toolbar">
+            <div class="section-heading">
+              <p class="eyebrow">Stats</p>
+              <h2 id="stats-title">集計</h2>
+            </div>
+            <div class="segmented" aria-label="集計期間">
+              <button type="button" data-period="day" class="active">日別</button>
+              <button type="button" data-period="week">週別</button>
+              <button type="button" data-period="month">月別</button>
+            </div>
+          </div>
+
+          <div class="chart-layout">
+            <div class="chart-panel">
+              <div class="chart-header">
+                <strong id="chartTitle">日別コイン</strong>
+                <span id="chartMode">素コイン</span>
+              </div>
+              <canvas id="coinChart" width="760" height="320" aria-label="獲得コイングラフ"></canvas>
+            </div>
+            <div class="ranking-panel">
+              <div class="chart-header">
+                <strong>キャラ別ランキング</strong>
+                <span>平均コイン</span>
+              </div>
+              <ol class="ranking-list" id="rankingList"></ol>
+            </div>
+          </div>
+        </section>
+
+        <section class="history-band" id="history" aria-labelledby="history-title">
+          <div class="history-heading">
+            <div class="section-heading">
+              <p class="eyebrow">History</p>
+              <h2 id="history-title">最新履歴</h2>
+            </div>
+            <div class="history-actions">
+              <button class="ghost-action" type="button" id="exportButton">CSV出力</button>
+              <button class="danger-action" type="button" id="resetButton">全削除</button>
+            </div>
+          </div>
+          <div class="history-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>日付</th>
+                  <th>キャラ</th>
+                  <th>素コイン</th>
+                  <th>1.3倍目安</th>
+                  <th>アイテム</th>
+                  <th>メモ</th>
+                </tr>
+              </thead>
+              <tbody id="historyBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <datalist id="characterList">
+      <option value="ガストン"></option>
+      <option value="ナミネ"></option>
+      <option value="シンデレラ"></option>
+      <option value="ジェダイルーク"></option>
+      <option value="アナキン"></option>
+    </datalist>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
