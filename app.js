@@ -5,6 +5,7 @@ const playedAtInput = document.querySelector("#playedAt");
 const characterInput = document.querySelector("#character");
 const baseCoinsInput = document.querySelector("#baseCoins");
 const playMinutesInput = document.querySelector("#playMinutes");
+const playSecondsInput = document.querySelector("#playSeconds");
 const memoInput = document.querySelector("#memo");
 const formNote = document.querySelector("#formNote");
 const sampleButton = document.querySelector("#sampleButton");
@@ -47,7 +48,7 @@ form.addEventListener("submit", (event) => {
     playedAt: playedAtInput.value,
     character,
     baseCoins,
-    playMinutes: Number(playMinutesInput.value || 0),
+    playSeconds: normalizePlaySeconds(playMinutesInput.value, playSecondsInput.value),
     items: checkedItems,
     memo: memoInput.value.trim(),
     createdAt: new Date().toISOString()
@@ -56,6 +57,7 @@ form.addEventListener("submit", (event) => {
   saveRecords();
   baseCoinsInput.value = "";
   playMinutesInput.value = "";
+  playSecondsInput.value = "";
   memoInput.value = "";
   showNote("記録しました。");
   render();
@@ -74,13 +76,13 @@ exportButton.addEventListener("click", () => {
   }
 
   const rows = [
-    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "playMinutes", "items", "memo"],
+    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "playTime", "items", "memo"],
     ...records.map((record) => [
       record.playedAt,
       record.character,
       record.baseCoins,
       Math.round(record.baseCoins * 1.3),
-      record.playMinutes || "",
+      formatPlayTime(record),
       record.items.join(" / "),
       record.memo || ""
     ])
@@ -324,7 +326,7 @@ function addSampleRecords() {
       playedAt: toDateInputValue(date),
       character,
       baseCoins,
-      playMinutes: 5 + (index % 4),
+      playSeconds: (5 + (index % 4)) * 60 + [0, 10, 15, 30][index % 4],
       items: sampleItems[index % sampleItems.length],
       memo: index % 4 === 0 ? "調子よさそう" : "",
       createdAt: new Date().toISOString()
@@ -356,6 +358,25 @@ function toDateInputValue(date) {
 
 function formatNumber(value) {
   return new Intl.NumberFormat("ja-JP").format(value || 0);
+}
+
+function normalizePlaySeconds(minutesValue, secondsValue) {
+  const minutes = Math.max(0, Number(minutesValue || 0));
+  const seconds = Math.min(59, Math.max(0, Number(secondsValue || 0)));
+  return Math.round(minutes * 60 + seconds);
+}
+
+function formatPlayTime(record) {
+  const totalSeconds = Number(record.playSeconds || 0);
+  if (!totalSeconds && record.playMinutes) {
+    return `${record.playMinutes}分`;
+  }
+  if (!totalSeconds) return "";
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  if (minutes && seconds) return `${minutes}分${seconds}秒`;
+  if (minutes) return `${minutes}分`;
+  return `${seconds}秒`;
 }
 
 function formatCompact(value) {

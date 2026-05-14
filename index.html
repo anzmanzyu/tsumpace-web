@@ -29,13 +29,13 @@
       </header>
 
       <main>
-        <section class="intro-band" aria-labelledby="intro-title">
+        <section class="intro-band compact-intro" aria-labelledby="intro-title">
           <div class="intro-copy">
             <p class="eyebrow">端末内保存のみ / ログインなし</p>
-            <h1 id="intro-title">コイン稼ぎの記録を、グラフで見返せる形に。</h1>
+            <h1 id="intro-title">TsumPace Web</h1>
             <p>
-              TsumPace Web は、Android版の雰囲気をインストール前に試せる軽量版です。
-              入力した記録はこのブラウザ内だけに保存されます。
+              コイン稼ぎの記録をブラウザ内に保存し、グラフやランキングで確認できます。
+              Android版をインストールする前のお試し版です。
             </p>
           </div>
           <div class="pace-strip" aria-label="サンプルのペース表示">
@@ -69,12 +69,21 @@
                 <span>素コイン</span>
                 <input id="baseCoins" type="number" min="0" step="1" inputmode="numeric" placeholder="例: 6500" required />
               </label>
-              <label>
-                <span>プレイ時間（分）</span>
-                <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="例: 5" aria-describedby="playMinutesHelp" />
-              </label>
+              <div class="time-field" aria-describedby="playTimeHelp">
+                <span class="field-label">プレイ時間</span>
+                <div class="time-inputs">
+                  <label>
+                    <span>分</span>
+                    <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="5" />
+                  </label>
+                  <label>
+                    <span>秒</span>
+                    <input id="playSeconds" type="number" min="0" max="59" step="1" inputmode="numeric" placeholder="15" />
+                  </label>
+                </div>
+              </div>
             </div>
-            <p class="field-help" id="playMinutesHelp">1プレイにかかった時間を分で入力します。未入力でも保存できます。</p>
+            <p class="field-help" id="playTimeHelp">例: 5分15秒なら、分に「5」、秒に「15」。未入力でも保存できます。</p>
 
             <fieldset class="item-picker">
               <legend>使用アイテム</legend>
