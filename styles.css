@@ -259,6 +259,13 @@ h2 {
   gap: 14px;
 }
 
+.field-help {
+  margin: 8px 0 0;
+  color: var(--ink-faint);
+  font-size: 0.82rem;
+  line-height: 1.6;
+}
+
 label,
 .item-picker {
   min-width: 0;

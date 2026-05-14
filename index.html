@@ -32,7 +32,7 @@
         <section class="intro-band" aria-labelledby="intro-title">
           <div class="intro-copy">
             <p class="eyebrow">端末内保存のみ / ログインなし</p>
-            <h1 id="intro-title">コイン稼ぎのペースを、あとで見返せる形に。</h1>
+            <h1 id="intro-title">コイン稼ぎの記録を、グラフで見返せる形に。</h1>
             <p>
               TsumPace Web は、Android版の雰囲気をインストール前に試せる軽量版です。
               入力した記録はこのブラウザ内だけに保存されます。
@@ -70,10 +70,11 @@
                 <input id="baseCoins" type="number" min="0" step="1" inputmode="numeric" placeholder="例: 6500" required />
               </label>
               <label>
-                <span>プレイ時間</span>
-                <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="分" />
+                <span>プレイ時間（分）</span>
+                <input id="playMinutes" type="number" min="0" step="1" inputmode="numeric" placeholder="例: 5" aria-describedby="playMinutesHelp" />
               </label>
             </div>
+            <p class="field-help" id="playMinutesHelp">1プレイにかかった時間を分で入力します。未入力でも保存できます。</p>
 
             <fieldset class="item-picker">
               <legend>使用アイテム</legend>
@@ -99,7 +100,7 @@
           <aside class="today-panel" aria-labelledby="today-title">
             <div class="section-heading compact">
               <p class="eyebrow">Today</p>
-              <h2 id="today-title">今日の手応え</h2>
+              <h2 id="today-title">今日の記録</h2>
             </div>
             <div class="meter">
               <div class="meter-value">
