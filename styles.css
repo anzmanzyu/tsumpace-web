@@ -432,6 +432,18 @@ button:focus-visible {
   font-weight: 700;
 }
 
+.trial-note {
+  margin: 12px 0 0;
+  padding: 10px 12px;
+  border: 1px solid rgba(246, 180, 54, 0.38);
+  border-radius: var(--radius);
+  color: #76520b;
+  background: #fff8e5;
+  font-size: 0.84rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
 .meter {
   padding: 18px;
   border: 1px solid var(--line);
