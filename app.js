@@ -1,4 +1,12 @@
 const storageKey = "tsumpace-web-records-v1";
+const coinMultiplier = 1.3;
+const itemCosts = {
+  "+Coin": 500,
+  "5→4": 1800,
+  "+Time": 1000,
+  "+Bomb": 1500,
+  "+Score": 500
+};
 
 const form = document.querySelector("#recordForm");
 const playedAtInput = document.querySelector("#playedAt");
@@ -76,12 +84,14 @@ exportButton.addEventListener("click", () => {
   }
 
   const rows = [
-    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "playTime", "coinsPerMinute", "coinsPerHour", "items", "memo"],
+    ["playedAt", "character", "baseCoins", "coinBonusEstimate", "itemCost", "netCoins", "playTime", "coinsPerMinute", "coinsPerHour", "items", "memo"],
     ...records.map((record) => [
       record.playedAt,
       record.character,
       record.baseCoins,
-      Math.round(record.baseCoins * 1.3),
+      grossCoins(record),
+      itemCost(record),
+      netCoins(record),
       formatPlayTime(record),
       efficiency(record).perMinute || "",
       efficiency(record).perHour || "",
@@ -147,12 +157,12 @@ function renderSummary() {
   const today = toDateInputValue(new Date());
   const todayCoins = records
     .filter((record) => record.playedAt === today)
-    .reduce((total, record) => total + record.baseCoins, 0);
-  const totalCoins = records.reduce((total, record) => total + record.baseCoins, 0);
+    .reduce((total, record) => total + netCoins(record), 0);
+  const totalCoins = records.reduce((total, record) => total + netCoins(record), 0);
   const average = records.length ? Math.round(totalCoins / records.length) : 0;
-  const best = records.length ? Math.max(...records.map((record) => record.baseCoins)) : 0;
+  const best = records.length ? Math.max(...records.map((record) => netCoins(record))) : 0;
   const timedRecords = records.filter((record) => Number(record.playSeconds || 0) > 0);
-  const totalTimedCoins = timedRecords.reduce((total, record) => total + record.baseCoins, 0);
+  const totalTimedCoins = timedRecords.reduce((total, record) => total + netCoins(record), 0);
   const totalSeconds = timedRecords.reduce((total, record) => total + Number(record.playSeconds || 0), 0);
   const averagePerMinute = totalSeconds ? Math.round(totalTimedCoins / (totalSeconds / 60)) : null;
   const averagePerHour = averagePerMinute ? averagePerMinute * 60 : null;
@@ -168,7 +178,7 @@ function renderSummary() {
 
 function renderHistory() {
   if (records.length === 0) {
-    historyBody.innerHTML = `<tr class="empty-row"><td colspan="8">まだ記録がありません。まずはサンプル追加か、今日の記録を入れてみてください。</td></tr>`;
+    historyBody.innerHTML = `<tr class="empty-row"><td colspan="10">まだ記録がありません。まずはサンプル追加か、今日の記録を入れてみてください。</td></tr>`;
     return;
   }
 
@@ -177,7 +187,9 @@ function renderHistory() {
       <td>${record.playedAt}</td>
       <td>${escapeHtml(record.character)}</td>
       <td class="numeric">${formatNumber(record.baseCoins)}</td>
-      <td class="numeric">${formatNumber(Math.round(record.baseCoins * 1.3))}</td>
+      <td class="numeric">${formatNumber(grossCoins(record))}</td>
+      <td class="numeric">-${formatNumber(itemCost(record))}</td>
+      <td class="numeric">${formatNumber(netCoins(record))}</td>
       <td class="numeric">${formatEfficiency(efficiency(record).perMinute)}</td>
       <td class="numeric">${formatEfficiency(efficiency(record).perHour)}</td>
       <td>${record.items.length ? record.items.map(escapeHtml).join(" / ") : "なし"}</td>
@@ -191,8 +203,8 @@ function renderRanking() {
   for (const record of records) {
     const current = grouped.get(record.character) || { count: 0, total: 0, best: 0 };
     current.count += 1;
-    current.total += record.baseCoins;
-    current.best = Math.max(current.best, record.baseCoins);
+    current.total += netCoins(record);
+    current.best = Math.max(current.best, netCoins(record));
     grouped.set(record.character, current);
   }
 
@@ -293,7 +305,7 @@ function buildSeries(period) {
   const grouped = new Map();
   for (const record of records) {
     const key = groupKey(record.playedAt, period);
-    grouped.set(key, (grouped.get(key) || 0) + record.baseCoins);
+    grouped.set(key, (grouped.get(key) || 0) + netCoins(record));
   }
 
   return [...grouped.entries()]
@@ -390,10 +402,22 @@ function formatPlayTime(record) {
   return `${seconds}秒`;
 }
 
+function grossCoins(record) {
+  return Math.round(Number(record.baseCoins || 0) * coinMultiplier);
+}
+
+function itemCost(record) {
+  return (record.items || []).reduce((total, item) => total + (itemCosts[item] || 0), 0);
+}
+
+function netCoins(record) {
+  return grossCoins(record) - itemCost(record);
+}
+
 function efficiency(record) {
   const totalSeconds = Number(record.playSeconds || 0);
   if (!totalSeconds) return { perMinute: null, perHour: null };
-  const perMinute = Math.round(record.baseCoins / (totalSeconds / 60));
+  const perMinute = Math.round(netCoins(record) / (totalSeconds / 60));
   return {
     perMinute,
     perHour: perMinute * 60
